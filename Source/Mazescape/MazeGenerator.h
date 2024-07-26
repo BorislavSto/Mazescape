@@ -1,0 +1,58 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "MazeGenerator.generated.h"
+
+UCLASS()
+class MAZESCAPE_API AMazeGenerator : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AMazeGenerator();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	void SimulateMaze();
+	void GenerateMaze();
+
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	int32 Width = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	int32 Height = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Dungeon Settings")
+	int32 PathLength = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	TSubclassOf<AActor> WallActorClass;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	TSubclassOf<AActor> FloorActorClass;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	FVector2D StartPos = FVector2D(0.0f, 0.0f);
+
+private:
+
+	TArray<bool> Grid;
+
+	void SetValue(FVector2D Position, bool Value);
+
+	bool GetValue(FVector2D Position) const;
+
+	bool IsWithinBounds(FVector2D Position) const;
+
+};
