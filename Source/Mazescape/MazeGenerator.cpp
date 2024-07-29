@@ -1,6 +1,7 @@
 #include "MazeGenerator.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
 
 AMazeGenerator::AMazeGenerator()
@@ -14,32 +15,42 @@ void AMazeGenerator::BeginPlay()
 
     UE_LOG(LogTemp, Warning, TEXT("BeginPlay called"));
 
-    if (!FloorActorClass) 
+    if (!FloorActorClass)
     {
         UE_LOG(LogTemp, Warning, TEXT("FloorActorClass is not valid or not derived from AActor"));
         return;
     }
-    else 
+    else
     {
         UE_LOG(LogTemp, Warning, TEXT("FloorActorClass is valid"));
     }
-    if (!WallActorClass) 
+    if (!WallActorClass)
     {
         UE_LOG(LogTemp, Warning, TEXT("WallActorClass is not valid or not derived from AActor"));
         return;
     }
-    else 
+    else
     {
         UE_LOG(LogTemp, Warning, TEXT("WallActorClass is valid"));
+    }
+    if (!PlayerCharacterClass)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is not valid or not derived from AActor"));
+        return;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is valid"));
     }
 
     // Initialize the grid
     Grid.SetNumZeroed(Width * Height);
 
-    SetValue(StartPos, true);
+    ForceSetValue(StartPos, true);
 
     SimulateMaze();
     GenerateMaze();
+    SpawnPlayer();
 }
 
 void AMazeGenerator::SimulateMaze()
@@ -47,12 +58,12 @@ void AMazeGenerator::SimulateMaze()
     TArray<FVector2D> PathStack;
     FVector2D CurrentPosition = StartPos;
 
-    SetValue(CurrentPosition, true);
+    ForceSetValue(CurrentPosition, true);
     PathStack.Add(CurrentPosition);
 
-    int32 PathLengthCounter = 1; // Initialize path length counter
+    int32 PathLengthCounter = 0; // Initialize path length counter
 
-    while (PathStack.Num() > 0 && PathLengthCounter < PathLength)
+    while (PathStack.Num() > 0)
     {
         FVector2D LastPosition = PathStack.Last();
         TArray<FVector2D> PossibleDirections = {
@@ -72,13 +83,20 @@ void AMazeGenerator::SimulateMaze()
 
             FVector2D NewPosition = LastPosition + RandomDirection;
 
-            if (IsWithinBounds(NewPosition) && !GetValue(NewPosition))
+            if (IsWithinBounds(NewPosition) && !GetValue(NewPosition) && ValidPosition(NewPosition) <= 1)
             {
                 SetValue(NewPosition, true);
                 PathStack.Add(NewPosition);
                 CurrentPosition = NewPosition;
                 PathLengthCounter++; // Increment path length counter
                 bMoved = true;
+
+                // Check if we reached the end position
+                if (CurrentPosition == EndPos)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Reached the end position"));
+                    return;
+                }
                 break;
             }
         }
@@ -102,10 +120,20 @@ void AMazeGenerator::GenerateMaze()
     {
         for (int32 X = 0; X < Width; ++X)
         {
-            FVector Location = ActorLocation + FVector(X * 100.0f, Y * 100.0f, 0.0f); // Offset by actor location
+            FVector Location = ActorLocation + FVector(X * 500.0f, Y * 500.0f, 0.0f); // Offset by actor location
 
             if (GetValue(FVector2D(X, Y)))
-                GetWorld()->SpawnActor<AActor>(FloorActorClass, Location, FRotator::ZeroRotator);
+            {
+                if (FVector2D(X, Y) == EndPos)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("SpecialFloorActorClass spawned"));
+                    GetWorld()->SpawnActor<AActor>(SpecialFloorActorClass, Location, FRotator::ZeroRotator);
+                }
+                else
+                {
+                    GetWorld()->SpawnActor<AActor>(FloorActorClass, Location, FRotator::ZeroRotator);
+                }
+            }
             else
                 GetWorld()->SpawnActor<AActor>(WallActorClass, Location, FRotator::ZeroRotator);
         }
@@ -120,6 +148,11 @@ void AMazeGenerator::SetValue(FVector2D Position, bool Value)
     }
 }
 
+void AMazeGenerator::ForceSetValue(FVector2D Position, bool Value)
+{
+    Grid[int(Position.Y) * Width + int(Position.X)] = Value;
+}
+
 bool AMazeGenerator::GetValue(FVector2D Position) const
 {
     if (!IsWithinBounds(Position))
@@ -130,5 +163,47 @@ bool AMazeGenerator::GetValue(FVector2D Position) const
 
 bool AMazeGenerator::IsWithinBounds(FVector2D Position) const
 {
-    return Position.X >= 0 && Position.X < Width && Position.Y >= 0 && Position.Y < Height;
+    return Position.X >= 1 && Position.X < Width - 1 && Position.Y >= 1 && Position.Y < Height - 1;
+}
+
+int32 AMazeGenerator::ValidPosition(FVector2D Position) const
+{
+    int32 TrueCount = 0;
+    TArray<FVector2D> Directions = {
+        FVector2D(0, 1),   // Up
+        FVector2D(0, -1),  // Down
+        FVector2D(-1, 0),  // Left
+        FVector2D(1, 0)    // Right
+    };
+
+    for (const FVector2D& Direction : Directions)
+    {
+        FVector2D Neighbor = Position + Direction;
+        if (IsWithinBounds(Neighbor) && GetValue(Neighbor))
+        {
+            TrueCount++;
+        }
+    }
+
+    return TrueCount;
+}
+
+void AMazeGenerator::SpawnPlayer()
+{
+    if (PlayerCharacterClass)
+    {
+        FVector PlayerSpawnLocation = GetActorLocation() + FVector(StartPos.X * 500.0f, StartPos.Y * 500.0f, 200.0f);
+
+        FRotator PlayerSpawnRotation(0.0f, 0.0f, 0.0f);
+        ACharacter* PlayerCharacter = GetWorld()->SpawnActor<ACharacter>(PlayerCharacterClass, PlayerSpawnLocation, PlayerSpawnRotation);
+
+        if (PlayerCharacter)
+        {
+            APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+            if (PlayerController)
+            {
+                PlayerController->Possess(Cast<APawn>(PlayerCharacter)); // Cast to APawn
+            }
+        }
+    }
 }

@@ -28,13 +28,16 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	TSubclassOf<ACharacter> PlayerCharacterClass;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	int32 Width = 10;
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	int32 Height = 10;
 
-	UPROPERTY(EditAnywhere, Category = "Dungeon Settings")
-	int32 PathLength = 10;
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	TSubclassOf<AActor> SpecialFloorActorClass;
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	TSubclassOf<AActor> WallActorClass;
@@ -45,14 +48,23 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	FVector2D StartPos = FVector2D(0.0f, 0.0f);
 
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	FVector2D EndPos = FVector2D(0.0f, 0.0f);
+
 private:
 
 	TArray<bool> Grid;
 
 	void SetValue(FVector2D Position, bool Value);
 
+	void ForceSetValue(FVector2D Position, bool Value);
+
 	bool GetValue(FVector2D Position) const;
 
 	bool IsWithinBounds(FVector2D Position) const;
+
+	int32 ValidPosition(FVector2D Position) const;
+
+	void SpawnPlayer();
 
 };
