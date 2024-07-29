@@ -14,6 +14,25 @@ void AMazeGenerator::BeginPlay()
 
     UE_LOG(LogTemp, Warning, TEXT("BeginPlay called"));
 
+    if (!FloorActorClass) 
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FloorActorClass is not valid or not derived from AActor"));
+        return;
+    }
+    else 
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FloorActorClass is valid"));
+    }
+    if (!WallActorClass) 
+    {
+        UE_LOG(LogTemp, Warning, TEXT("WallActorClass is not valid or not derived from AActor"));
+        return;
+    }
+    else 
+    {
+        UE_LOG(LogTemp, Warning, TEXT("WallActorClass is valid"));
+    }
+
     // Initialize the grid
     Grid.SetNumZeroed(Width * Height);
 
