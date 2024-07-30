@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "MazeGenerator.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMazeCompleteDelegate, AActor*, ActiveGen);
+
 UCLASS()
 class MAZESCAPE_API AMazeGenerator : public AActor
 {
@@ -26,6 +28,8 @@ public:
 	void SimulateMaze();
 	void GenerateMaze();
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnMazeCompleteDelegate OnMazeCompleteDelegate;
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	TSubclassOf<ACharacter> PlayerCharacterClass;

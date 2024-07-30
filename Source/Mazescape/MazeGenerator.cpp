@@ -21,27 +21,23 @@ void AMazeGenerator::BeginPlay()
         return;
     }
     else
-    {
         UE_LOG(LogTemp, Warning, TEXT("FloorActorClass is valid"));
-    }
+    
     if (!WallActorClass)
     {
         UE_LOG(LogTemp, Warning, TEXT("WallActorClass is not valid or not derived from AActor"));
         return;
     }
     else
-    {
         UE_LOG(LogTemp, Warning, TEXT("WallActorClass is valid"));
-    }
+    
     if (!PlayerCharacterClass)
     {
         UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is not valid or not derived from AActor"));
         return;
     }
     else
-    {
         UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is valid"));
-    }
 
     // Initialize the grid
     Grid.SetNumZeroed(Width * Height);
@@ -104,10 +100,9 @@ void AMazeGenerator::SimulateMaze()
         if (!bMoved)
         {
             PathStack.Pop();
+        
             if (PathStack.Num() > 0)
-            {
                 CurrentPosition = PathStack.Last();
-            }
         }
     }
 }
@@ -125,14 +120,9 @@ void AMazeGenerator::GenerateMaze()
             if (GetValue(FVector2D(X, Y)))
             {
                 if (FVector2D(X, Y) == EndPos)
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("SpecialFloorActorClass spawned"));
                     GetWorld()->SpawnActor<AActor>(SpecialFloorActorClass, Location, FRotator::ZeroRotator);
-                }
                 else
-                {
                     GetWorld()->SpawnActor<AActor>(FloorActorClass, Location, FRotator::ZeroRotator);
-                }
             }
             else
                 GetWorld()->SpawnActor<AActor>(WallActorClass, Location, FRotator::ZeroRotator);
@@ -143,9 +133,7 @@ void AMazeGenerator::GenerateMaze()
 void AMazeGenerator::SetValue(FVector2D Position, bool Value)
 {
     if (IsWithinBounds(Position))
-    {
         Grid[int(Position.Y) * Width + int(Position.X)] = Value;
-    }
 }
 
 void AMazeGenerator::ForceSetValue(FVector2D Position, bool Value)
@@ -179,10 +167,9 @@ int32 AMazeGenerator::ValidPosition(FVector2D Position) const
     for (const FVector2D& Direction : Directions)
     {
         FVector2D Neighbor = Position + Direction;
+        
         if (IsWithinBounds(Neighbor) && GetValue(Neighbor))
-        {
             TrueCount++;
-        }
     }
 
     return TrueCount;
@@ -200,10 +187,11 @@ void AMazeGenerator::SpawnPlayer()
         if (PlayerCharacter)
         {
             APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+ 
             if (PlayerController)
-            {
                 PlayerController->Possess(Cast<APawn>(PlayerCharacter)); // Cast to APawn
-            }
         }
     }
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This is an on-screen message!"));
+    OnMazeCompleteDelegate.Broadcast(this);
 }

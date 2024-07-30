@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,7 @@ void AMazescapeCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
 }
 
 //////////////////////////////////////////////////////////////////////////
