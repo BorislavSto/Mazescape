@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ClosingWall.generated.h"
+#include "EventHandler.generated.h"
 
 UCLASS()
-class MAZESCAPE_API AClosingWall : public AActor
+class MAZESCAPE_API AEventHandler : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AClosingWall();
+	AEventHandler();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,14 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-
-	UFUNCTION()
-	void Yippie(AActor* ActiveGen);
-
-	UFUNCTION()
-	void Yippie2();
-
-	UPROPERTY(EditAnywhere)
-	class AMazeGenerator* GeneratorToWatch;
 };

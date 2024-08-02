@@ -2,6 +2,7 @@
 
 
 #include "ClosingWall.h"
+#include "DelegateHandler.h"
 #include "MazeGenerator.h"
 
 // Sets default values
@@ -16,9 +17,11 @@ AClosingWall::AClosingWall()
 void AClosingWall::BeginPlay()
 {
 	Super::BeginPlay();
-	
+ 
+    DelegateHandler::MyDelegate.BindUObject(this, &AClosingWall::Yippie2);
+	    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is an on-screen message!"));
 
-    if (GeneratorToWatch)
+    /*if (GeneratorToWatch)
     {
 	    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is an on-screen message!"));
         GeneratorToWatch->OnMazeCompleteDelegate.AddDynamic(this, &AClosingWall::Yippie);
@@ -26,7 +29,7 @@ void AClosingWall::BeginPlay()
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("GeneratorToWatch is not assigned!"));
-    }
+    }*/
 }
 
 // Called every frame
@@ -37,9 +40,14 @@ void AClosingWall::Tick(float DeltaTime)
 }
 
 
+void AClosingWall::Yippie2()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("This is an on-screen message!"));
+}
+
 void AClosingWall::Yippie(AActor* ActiveGen)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is an on-screen message!"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("This is an on-screen message!"));
 	SetActorScale3D(GetActorScale3D() + 1.0f);
 }
 

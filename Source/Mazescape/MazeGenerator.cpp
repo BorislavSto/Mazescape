@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
+#include "DelegateHandler.h"
 
 AMazeGenerator::AMazeGenerator()
 {
@@ -39,6 +40,17 @@ void AMazeGenerator::BeginPlay()
     else
         UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is valid"));
 
+
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AMazeGenerator::CustomInit);
+}
+
+void AMazeGenerator::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+}
+
+void AMazeGenerator::CustomInit()
+{
     // Initialize the grid
     Grid.SetNumZeroed(Width * Height);
 
@@ -192,6 +204,19 @@ void AMazeGenerator::SpawnPlayer()
                 PlayerController->Possess(Cast<APawn>(PlayerCharacter)); // Cast to APawn
         }
     }
+
+
+    if (DelegateHandler::MyDelegate.IsBound())
+    {
+        DelegateHandler::MyDelegate.Execute();
+    }
+    else {
+
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("This is an on-screen message!"));
+    }
+
+    //DelegateHandler::HandleDelegateCall();
+
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This is an on-screen message!"));
     OnMazeCompleteDelegate.Broadcast(this);
 }

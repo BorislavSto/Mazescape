@@ -71,4 +71,6 @@ private:
 
 	void SpawnPlayer();
 
+	void CustomInit();
+
 };
