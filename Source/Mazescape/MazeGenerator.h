@@ -25,7 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SimulateMaze();
+	bool SimulateMaze();
 	void GenerateMaze();
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -39,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	int32 Height = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	int32 MaxIterations = 10;
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	TSubclassOf<AActor> SpecialFloorActorClass;
@@ -56,6 +59,10 @@ public:
 	FVector2D EndPos = FVector2D(0.0f, 0.0f);
 
 private:
+
+	int32 Iterations = 0;
+
+	FVector2D CurrentPosition;
 
 	TArray<bool> Grid;
 

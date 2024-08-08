@@ -31,6 +31,9 @@ private:
 	UFUNCTION()
 	void Yippie2();
 
+	UFUNCTION()
+	void Yippie3(AActor* gengen);
+
 	UPROPERTY(EditAnywhere)
 	class AMazeGenerator* GeneratorToWatch;
 };

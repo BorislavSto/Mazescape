@@ -5,6 +5,12 @@
 
 FMyDelegate DelegateHandler::MyDelegate;
 
+FMyDelegate DelegateHandler::OnTimerStart;
+FMyDelegate DelegateHandler::OnTimerStop;
+FMyDelegate DelegateHandler::OnTimerReset;
+
+FMyNonDynamicDelegate DelegateHandler::MyDelegate2;
+
 DelegateHandler::DelegateHandler()
 {
 }

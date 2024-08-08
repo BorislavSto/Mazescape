@@ -21,6 +21,7 @@ void AClosingWall::BeginPlay()
     DelegateHandler::MyDelegate.BindUObject(this, &AClosingWall::Yippie2);
 	    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is an on-screen message!"));
 
+        DelegateHandler::MyDelegate2.AddUObject(this, &AClosingWall::Yippie3);
     /*if (GeneratorToWatch)
     {
 	    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is an on-screen message!"));
@@ -39,6 +40,10 @@ void AClosingWall::Tick(float DeltaTime)
 
 }
 
+void AClosingWall::Yippie3(AActor* gengen)
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("This is an on-screen message!"));
+}
 
 void AClosingWall::Yippie2()
 {

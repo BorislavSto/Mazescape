@@ -6,9 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "MazeTimer.generated.h"
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimerUpdated, int32, RemainingTime); //FOnTimerUpdated, int32, RemainingTime);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimerFinished);
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MAZESCAPE_API UMazeTimer : public UActorComponent
 {
@@ -22,7 +19,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	/*UFUNCTION(BlueprintCallable, Category = "Timer")
+	UFUNCTION(BlueprintCallable, Category = "Timer")
 	void StartTimer();
 
 	UFUNCTION(BlueprintCallable, Category = "Timer")
@@ -32,14 +29,13 @@ protected:
 	void ResetTimer();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer")
-	int32 CountdownTime;*/
+	int32 CountdownTime;
 
-	//UPROPERTY(BlueprintAssignable, Category = "Timer")
-	//FOnTimerUpdated OnTimerUpdated;
+private:
+	FTimerHandle TimerHandle;
+	float CurrentTime;
 
-	/*UPROPERTY(BlueprintAssignable, Category = "Timer")
-	FTimerFinished OnTimerFinished;*/
-
+	void UpdateTimer();
 
 public:	
 	// Called every frame
