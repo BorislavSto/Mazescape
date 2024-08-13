@@ -13,7 +13,12 @@ class AMazescapeGameMode : public AGameModeBase
 
 public:
 	AMazescapeGameMode();
+
+	void TimerRanOut(bool bTimerRanOut);
+	
+	void PlayerLost();
+
+private:
+	void RemovePlayerCharacter();
+
 };
-
-
-

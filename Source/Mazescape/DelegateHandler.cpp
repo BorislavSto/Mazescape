@@ -6,8 +6,12 @@
 FMyDelegate DelegateHandler::MyDelegate;
 
 FMyDelegate DelegateHandler::OnTimerStart;
-FMyDelegate DelegateHandler::OnTimerStop;
 FMyDelegate DelegateHandler::OnTimerReset;
+
+FMyDelegate DelegateHandler::OnPlayerWin;
+FMyDelegate DelegateHandler::OnPlayerLoose;
+
+FMyDelegateOneParam DelegateHandler::OnTimerStop;
 
 FMyNonDynamicDelegate DelegateHandler::MyDelegate2;
 

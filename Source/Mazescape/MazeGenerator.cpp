@@ -53,17 +53,18 @@ void AMazeGenerator::CustomInit()
 {
     for (int i = Iterations; i < MaxIterations; i++) 
     {
-        if (SimulateMaze()) 
+        bool acceptableSimulation;
+        SimulateMaze(&acceptableSimulation);
+
+        if (acceptableSimulation)
             break;
     }
 
     GenerateMaze();
 }
 
-bool AMazeGenerator::SimulateMaze()
+void AMazeGenerator::SimulateMaze(bool* outBool)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Starting Maze Simulation, Iteration: %d"), Iterations);
-    // Initialize the grid
     Grid.Empty();
     Grid.SetNumZeroed(Width * Height);
     ForceSetValue(StartPos, true);
@@ -74,7 +75,7 @@ bool AMazeGenerator::SimulateMaze()
     ForceSetValue(CurrentPosition, true);
     PathStack.Add(CurrentPosition);
 
-    int32 PathLengthCounter = 0; // Initialize path length counter
+    int32 PathLengthCounter = 0;
     while (PathStack.Num() > 0)
     {
         FVector2D LastPosition = PathStack.Last();
@@ -100,14 +101,15 @@ bool AMazeGenerator::SimulateMaze()
                 SetValue(NewPosition, true);
                 PathStack.Add(NewPosition);
                 CurrentPosition = NewPosition;
-                PathLengthCounter++; // Increment path length counter
+                PathLengthCounter++;
                 bMoved = true;
+                SpawnEnemy(CurrentPosition);
 
-                // Check if we reached the end position
                 if (CurrentPosition == EndPos)
                 {
                     UE_LOG(LogTemp, Warning, TEXT("Reached the end position"));
-                    return true;
+                    *outBool = true;
+                    return;
                 }
                 break;
             }
@@ -117,17 +119,14 @@ bool AMazeGenerator::SimulateMaze()
         {
             PathStack.Pop();
         
-            if (PathStack.Num() > 0) {
-                GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("POP IDK"));
+            if (PathStack.Num() > 0)
                 CurrentPosition = PathStack.Last();
-            }
         }
     }
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("position"));
 
-        UE_LOG(LogTemp, Warning, TEXT("Did not reach the end position, restarting simulation. Current Position: (%f, %f)"), CurrentPosition.X, CurrentPosition.Y);
-        Iterations++;
-        return false; // Recursive call
+    Iterations++;
+    *outBool = false;
+    return;
 }
 
 void AMazeGenerator::GenerateMaze()
@@ -229,13 +228,33 @@ void AMazeGenerator::SpawnPlayer()
     {
         DelegateHandler::MyDelegate.Execute();
     }
-    else {
-
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("This is an on-screen message!"));
+    else 
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("This is an on-screen message!"));
     }
 
     //DelegateHandler::HandleDelegateCall();
 
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This is an on-screen message!"));
     OnMazeCompleteDelegate.Broadcast(this);
+}
+
+
+void AMazeGenerator::SpawnEnemy(FVector2D Position)
+{
+    int32 RandomNumber = FMath::RandRange(1, 50);
+    if (RandomNumber == 1)
+    {
+        if (EnemyCharacterClass)
+        {
+            FVector EnemySpawnLocation = GetActorLocation() + FVector(Position.X * 500.0f, Position.Y * 500.0f, 101.0f);
+
+            FRotator EnemySpawnRotation(0.0f, 0.0f, 0.0f);
+
+            ACharacter* EnemyCharacter = GetWorld()->SpawnActor<ACharacter>(EnemyCharacterClass, EnemySpawnLocation, EnemySpawnRotation);
+
+            if (EnemyCharacter)
+                EnemyCharacter->SpawnDefaultController();
+        }
+    }
 }

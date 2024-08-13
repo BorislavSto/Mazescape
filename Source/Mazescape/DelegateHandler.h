@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 DECLARE_DELEGATE(FMyDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMyDelegateOneParam, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMyNonDynamicDelegate, AActor*);
 
 class MAZESCAPE_API DelegateHandler : public AActor
@@ -16,8 +17,11 @@ public:
 	static FMyDelegate MyDelegate;
 
 	static FMyDelegate OnTimerStart;
-	static FMyDelegate OnTimerStop;
+	static FMyDelegateOneParam OnTimerStop;
 	static FMyDelegate OnTimerReset;
+
+	static FMyDelegate OnPlayerWin;
+	static FMyDelegate OnPlayerLoose;
 
 	static FMyNonDynamicDelegate MyDelegate2;
 

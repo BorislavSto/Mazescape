@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "DelegateHandler.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -129,4 +130,16 @@ void AMazescapeCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AMazescapeCharacter::MyStaticFunction()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Static function called!"));
+
+	// Example: Display a message on the screen
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Static function called!"));
+	}
+	DelegateHandler::OnPlayerLoose.ExecuteIfBound();
 }

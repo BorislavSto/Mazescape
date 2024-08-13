@@ -6,9 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MazeTimerWidget.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimerRanOut);
+
 UCLASS()
 class MAZESCAPE_API UMazeTimerWidget : public UUserWidget
 {
@@ -18,7 +17,7 @@ class MAZESCAPE_API UMazeTimerWidget : public UUserWidget
 	void StartTimer();
 
 	UFUNCTION(BlueprintCallable, Category = "Timer")
-	void StopTimer();
+	void StopTimer(bool bTimerRanOut);
 
 	UFUNCTION(BlueprintCallable, Category = "Timer")
 	void ResetTimer();
@@ -29,6 +28,9 @@ class MAZESCAPE_API UMazeTimerWidget : public UUserWidget
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "Timer")
 	float CurrentTime;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnTimerRanOut OnTimerRanOut;
 
 protected:
 	FTimerHandle TimerHandle;

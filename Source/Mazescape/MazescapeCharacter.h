@@ -70,6 +70,8 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
+	void MyStaticFunction();
 
 };
 

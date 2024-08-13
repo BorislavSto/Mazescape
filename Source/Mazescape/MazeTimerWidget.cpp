@@ -7,7 +7,7 @@ void UMazeTimerWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateHandler::OnTimerStart.BindUObject(this, &UMazeTimerWidget::StartTimer);
-	DelegateHandler::OnTimerStop.BindUObject(this, &UMazeTimerWidget::StopTimer);
+	DelegateHandler::OnTimerStop.AddUObject(this, &UMazeTimerWidget::StopTimer);
 	DelegateHandler::OnTimerReset.BindUObject(this, &UMazeTimerWidget::ResetTimer);
 }
 
@@ -21,14 +21,16 @@ void UMazeTimerWidget::StartTimer()
 	}
 }
 
-void UMazeTimerWidget::StopTimer()
+void UMazeTimerWidget::StopTimer(bool bTimerRanOut)
 {
+	//DelegateHandler::OnTimerStop.ExecuteIfBound(bTimerRanOut);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("TimerRanOut")));
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
 void UMazeTimerWidget::ResetTimer()
 {
-	StopTimer();
+	StopTimer(true);
 	CurrentTime = CountdownTime;
 	StartTimer();
 }
@@ -38,15 +40,13 @@ void UMazeTimerWidget::UpdateTimer()
 	if (CurrentTime > 0)
 	{
 		CurrentTime -= 1.0f;
-		// You can add a debug message or update your UI here
 		if (GEngine)
-		{
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Time Left: %f"), CurrentTime));
-		}
 	}
 	else
 	{
-		StopTimer();
-		// Handle the event when the timer reaches zero
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("TimerRanOut")));
+		OnTimerRanOut.Broadcast();
+		StopTimer(true);
 	}
 }

@@ -25,7 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool SimulateMaze();
+	void SimulateMaze(bool* outBool);
 	void GenerateMaze();
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	TSubclassOf<ACharacter> PlayerCharacterClass;
+
+	UPROPERTY(EditAnywhere, Category = "Maze Config")
+	TSubclassOf<ACharacter> EnemyCharacterClass;
 
 	UPROPERTY(EditAnywhere, Category = "Maze Config")
 	int32 Width = 10;
@@ -77,6 +80,8 @@ private:
 	int32 ValidPosition(FVector2D Position) const;
 
 	void SpawnPlayer();
+
+	void SpawnEnemy(FVector2D Position);
 
 	void CustomInit();
 
