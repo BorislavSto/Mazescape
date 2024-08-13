@@ -13,6 +13,9 @@ class MAZESCAPE_API UMazeTimerWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void RestartGame();
+
 	UFUNCTION(BlueprintCallable, Category = "Timer")
 	void StartTimer();
 

@@ -40,6 +40,7 @@ void AMazeGenerator::BeginPlay()
     else
         UE_LOG(LogTemp, Warning, TEXT("PlayerCharacterClass is valid"));
 
+    DelegateHandler::OnRestartGame.BindUObject(this, &AMazeGenerator::RegenerateMaze);
 
     GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AMazeGenerator::CustomInit);
 }
@@ -139,15 +140,20 @@ void AMazeGenerator::GenerateMaze()
         {
             FVector Location = ActorLocation + FVector(X * 500.0f, Y * 500.0f, 0.0f); // Offset by actor location
 
+            AActor* SpawnedActor = nullptr;
+
             if (GetValue(FVector2D(X, Y)))
             {
                 if (FVector2D(X, Y) == EndPos)
-                    GetWorld()->SpawnActor<AActor>(SpecialFloorActorClass, Location, FRotator::ZeroRotator);
+                    SpawnedActor = GetWorld()->SpawnActor<AActor>(SpecialFloorActorClass, Location, FRotator::ZeroRotator);
                 else
-                    GetWorld()->SpawnActor<AActor>(FloorActorClass, Location, FRotator::ZeroRotator);
+                    SpawnedActor = GetWorld()->SpawnActor<AActor>(FloorActorClass, Location, FRotator::ZeroRotator);
             }
             else
-                GetWorld()->SpawnActor<AActor>(WallActorClass, Location, FRotator::ZeroRotator);
+                SpawnedActor = GetWorld()->SpawnActor<AActor>(WallActorClass, Location, FRotator::ZeroRotator);
+
+            if (SpawnedActor)
+                SpawnedActors.Add(SpawnedActor);
         }
     }
 
@@ -214,26 +220,20 @@ void AMazeGenerator::SpawnPlayer()
  
             if (PlayerController)
                 PlayerController->Possess(Cast<APawn>(PlayerCharacter)); // Cast to APawn
+
+            SpawnedActors.Add(PlayerCharacter);
         }
     }
 
     DelegateHandler::OnTimerStart.ExecuteIfBound();
 
     if (DelegateHandler::MyDelegate2.IsBound())
-    {
         DelegateHandler::MyDelegate2.Broadcast(this);
-    }
 
     if (DelegateHandler::MyDelegate.IsBound())
-    {
         DelegateHandler::MyDelegate.Execute();
-    }
     else 
-    {
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("This is an on-screen message!"));
-    }
-
-    //DelegateHandler::HandleDelegateCall();
 
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This is an on-screen message!"));
     OnMazeCompleteDelegate.Broadcast(this);
@@ -254,7 +254,34 @@ void AMazeGenerator::SpawnEnemy(FVector2D Position)
             ACharacter* EnemyCharacter = GetWorld()->SpawnActor<ACharacter>(EnemyCharacterClass, EnemySpawnLocation, EnemySpawnRotation);
 
             if (EnemyCharacter)
+            {
                 EnemyCharacter->SpawnDefaultController();
+                SpawnedEnemies.Add(EnemyCharacter);
+            }
         }
     }
+}
+
+void AMazeGenerator::ClearMaze()
+{
+    for (AActor* SpawnedActor : SpawnedActors)
+    {
+        if (IsValid(SpawnedActor))
+            SpawnedActor->Destroy();
+    }
+    SpawnedActors.Empty();
+
+    for (ACharacter* SpawnedEnemy : SpawnedEnemies)
+    {
+        if (IsValid(SpawnedEnemy))
+            SpawnedEnemy->Destroy();
+    }
+    SpawnedEnemies.Empty();
+}
+
+
+void AMazeGenerator::RegenerateMaze()
+{
+    ClearMaze();
+    CustomInit();
 }

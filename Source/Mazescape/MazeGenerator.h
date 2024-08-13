@@ -26,6 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SimulateMaze(bool* outBool);
+
 	void GenerateMaze();
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -63,26 +64,34 @@ public:
 
 private:
 
+	bool GetValue(FVector2D Position) const;
+
+	bool IsWithinBounds(FVector2D Position) const;
+
+	int32 ValidPosition(FVector2D Position) const;
+	
+	void SetValue(FVector2D Position, bool Value);
+
+	void ForceSetValue(FVector2D Position, bool Value);
+
+	void SpawnEnemy(FVector2D Position);
+
+	void SpawnPlayer();
+
+	void CustomInit();
+
+	void ClearMaze();
+
+	void RegenerateMaze();
+
 	int32 Iterations = 0;
 
 	FVector2D CurrentPosition;
 
 	TArray<bool> Grid;
 
-	void SetValue(FVector2D Position, bool Value);
+	TArray<AActor*> SpawnedActors;
 
-	void ForceSetValue(FVector2D Position, bool Value);
-
-	bool GetValue(FVector2D Position) const;
-
-	bool IsWithinBounds(FVector2D Position) const;
-
-	int32 ValidPosition(FVector2D Position) const;
-
-	void SpawnPlayer();
-
-	void SpawnEnemy(FVector2D Position);
-
-	void CustomInit();
+	TArray<ACharacter*> SpawnedEnemies;
 
 };

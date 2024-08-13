@@ -23,6 +23,8 @@ public:
 	static FMyDelegate OnPlayerWin;
 	static FMyDelegate OnPlayerLoose;
 
+	static FMyDelegate OnRestartGame;
+
 	static FMyNonDynamicDelegate MyDelegate2;
 
 	static void HandleDelegateCall();

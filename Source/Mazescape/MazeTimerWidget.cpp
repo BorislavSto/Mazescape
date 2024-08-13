@@ -50,3 +50,8 @@ void UMazeTimerWidget::UpdateTimer()
 		StopTimer(true);
 	}
 }
+
+void UMazeTimerWidget::RestartGame()
+{
+	DelegateHandler::OnRestartGame.ExecuteIfBound();
+}

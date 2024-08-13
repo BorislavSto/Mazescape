@@ -11,6 +11,8 @@ FMyDelegate DelegateHandler::OnTimerReset;
 FMyDelegate DelegateHandler::OnPlayerWin;
 FMyDelegate DelegateHandler::OnPlayerLoose;
 
+FMyDelegate DelegateHandler::OnRestartGame;
+
 FMyDelegateOneParam DelegateHandler::OnTimerStop;
 
 FMyNonDynamicDelegate DelegateHandler::MyDelegate2;

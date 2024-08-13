@@ -35,7 +35,7 @@ class AMazescapeCharacter : public ACharacter
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
-
+	
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
@@ -43,10 +43,32 @@ class AMazescapeCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	
+	/** Dash Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
 
 public:
 	AMazescapeCharacter();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float DashDistance = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float DashDuration = 0.2f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
+	float DashCooldown = 1.0f;
+
+private:
+	bool bCanDash = true;
+
+	void ResetDash();
+
+	void StopDashing();
+
+	FTimerHandle DashCooldownHandle;
+	FTimerHandle DashStopHandle;
 
 protected:
 
@@ -55,6 +77,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for dashing input */
+	void Dash(const FInputActionValue& Value);
 			
 
 protected:

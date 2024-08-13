@@ -87,6 +87,9 @@ void AMazescapeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMazescapeCharacter::Move);
 
+		// Moving
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMazescapeCharacter::Dash);
+
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMazescapeCharacter::Look);
 	}
@@ -132,14 +135,47 @@ void AMazescapeCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AMazescapeCharacter::Dash(const FInputActionValue& Value)
+{
+	if (bCanDash)
+	{
+		// Get the current forward direction
+		FVector DashDirection = GetActorForwardVector();
+
+		// Calculate the dash target location
+		FVector DashTargetLocation = GetActorLocation() + (DashDirection * DashDistance);
+
+		// Start the dash movement
+		LaunchCharacter(DashDirection * DashDistance / DashDuration, true, true);
+
+		// Disable dashing until cooldown is over
+		bCanDash = false;
+
+		// Set a timer to reset dash ability after cooldown
+		GetWorld()->GetTimerManager().SetTimer(DashCooldownHandle, this, &AMazescapeCharacter::ResetDash, DashCooldown, false);
+
+		// (Optional) Set a timer to stop dashing after DashDuration
+		GetWorld()->GetTimerManager().SetTimer(DashStopHandle, this, &AMazescapeCharacter::StopDashing, DashDuration, false);
+	}
+}
+
+void AMazescapeCharacter::ResetDash()
+{
+	bCanDash = true;
+}
+
+void AMazescapeCharacter::StopDashing()
+{
+	// Stop character movement if necessary (not always needed)
+	GetCharacterMovement()->StopMovementImmediately();
+}
+
 void AMazescapeCharacter::MyStaticFunction()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Static function called!"));
 
-	// Example: Display a message on the screen
 	if (GEngine)
-	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Static function called!"));
-	}
+
 	DelegateHandler::OnPlayerLoose.ExecuteIfBound();
 }
