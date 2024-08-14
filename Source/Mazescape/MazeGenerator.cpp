@@ -242,7 +242,7 @@ void AMazeGenerator::SpawnPlayer()
 
 void AMazeGenerator::SpawnEnemy(FVector2D Position)
 {
-    int32 RandomNumber = FMath::RandRange(1, 50);
+    int32 RandomNumber = FMath::RandRange(1, 30);
     if (RandomNumber == 1)
     {
         if (EnemyCharacterClass)

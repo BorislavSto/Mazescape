@@ -26,6 +26,7 @@ void UMazeTimerWidget::StopTimer(bool bTimerRanOut)
 	//DelegateHandler::OnTimerStop.ExecuteIfBound(bTimerRanOut);
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("TimerRanOut")));
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	OnTimerRanOut.Broadcast();
 }
 
 void UMazeTimerWidget::ResetTimer()
@@ -46,7 +47,7 @@ void UMazeTimerWidget::UpdateTimer()
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("TimerRanOut")));
-		OnTimerRanOut.Broadcast();
+		DelegateHandler::OnTimerStop.Broadcast(false);
 		StopTimer(true);
 	}
 }
